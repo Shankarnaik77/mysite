@@ -113,7 +113,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'  # Removed leading slash to match GitHub Pages URL structure
+STATIC_URL = '/static/'  # Added leading slash back
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'mysite/static'),
 ]
@@ -123,8 +123,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 BUILD_DIR = os.path.join(BASE_DIR, 'build')
 
 # URL Settings
-APPEND_SLASH = True  # Changed to handle trailing slashes consistently
+APPEND_SLASH = False  # Changed to prevent redirects during static generation
 PREPEND_WWW = False
+
+# Simplified middleware for static generation
+if os.environ.get('DJANGO_SETTINGS_SKIP_LOCAL') == 'True':
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.middleware.common.CommonMiddleware',
+    ]
+    USE_I18N = False
+    USE_L10N = False
+    USE_TZ = False
+    DEBUG = False
 
 # Media files
 MEDIA_URL = '/media/'
