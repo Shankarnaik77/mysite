@@ -108,6 +108,13 @@ def copy_static_files():
         else:
             shutil.copy2(item, dest_path)
 
+    # Copy .nojekyll file
+    nojekyll_file = Path(settings.BASE_DIR) / '.nojekyll'
+    if nojekyll_file.exists():
+        shutil.copy2(nojekyll_file, build_dir / '.nojekyll')
+    else:
+        (build_dir / '.nojekyll').touch()
+
     # Clean up
     shutil.rmtree(temp_static_dir)
     
