@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-50%&=g5(f2w7z9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.github.io']
+ALLOWED_HOSTS = ['*']  # Allow all hosts for static site generation
 
 
 # Application definition
@@ -45,13 +45,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this for static files
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -59,14 +54,12 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'mysite' / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'mysite/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
             ],
         },
     },
@@ -112,9 +105,11 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_TZ = True
+USE_L10N = False
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -130,8 +125,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DISTILL_DIR = os.path.join(BASE_DIR, 'build')
 
 # URL Settings
-APPEND_SLASH = False  # Don't redirect to add trailing slashes
-FORCE_SCRIPT_NAME = None
+APPEND_SLASH = False
+PREPEND_WWW = False
 
 # Media files
 MEDIA_URL = '/media/'

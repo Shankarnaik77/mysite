@@ -7,7 +7,8 @@ from django.conf import settings
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
-os.environ.setdefault('DJANGO_SETTINGS_SKIP_LOCAL', 'True')  # Skip local settings
+os.environ.setdefault('DJANGO_SETTINGS_SKIP_LOCAL', 'True')
+os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 django.setup()
 
 def copy_static_files():
@@ -15,44 +16,44 @@ def copy_static_files():
     build_dir = script_dir / 'build'
     temp_static_dir = script_dir / 'temp_static'
     
-    # Clean build directory if it exists
-    if build_dir.exists():
-        shutil.rmtree(build_dir)
-    build_dir.mkdir()
+    # Clean directories
+    for dir_path in [build_dir, temp_static_dir]:
+        if dir_path.exists():
+            shutil.rmtree(dir_path)
+        dir_path.mkdir(parents=True)
 
-    # Clean temp static directory if it exists
-    if temp_static_dir.exists():
-        shutil.rmtree(temp_static_dir)
-    temp_static_dir.mkdir()
-
-    # First, collect static files to a temporary directory
+    # First, collect static files
     print("Collecting static files...")
     settings.STATIC_ROOT = str(temp_static_dir)
-    call_command('collectstatic', '--noinput', '--clear')
+    call_command('collectstatic', '--noinput', '--clear', verbosity=0)
 
-    # Then generate static site with django-distill
-    print("Generating static site with django-distill...")
+    # Generate static site
+    print("Generating static site...")
     call_command('distill-local', '--force', '--exclude-staticfiles', output_dir=str(build_dir))
 
-    # Copy static files to build directory
-    print("Copying static files to build directory...")
+    # Copy static files
+    print("Copying static files...")
     static_build_dir = build_dir / 'static'
     if not static_build_dir.exists():
         static_build_dir.mkdir(parents=True)
+    
+    # Copy all static files
     for item in temp_static_dir.iterdir():
+        dest_path = static_build_dir / item.name
         if item.is_dir():
-            shutil.copytree(item, static_build_dir / item.name, dirs_exist_ok=True)
+            shutil.copytree(item, dest_path, dirs_exist_ok=True)
         else:
-            shutil.copy2(item, static_build_dir)
+            shutil.copy2(item, dest_path)
 
-    # Clean up temp directory
+    # Clean up
     shutil.rmtree(temp_static_dir)
     
     print("Build completed successfully!")
     print(f"Build directory: {build_dir}")
-    print("Contents of build directory:")
+    print("\nContents of build directory:")
     for path in build_dir.rglob('*'):
-        print(f"  {path.relative_to(build_dir)}")
+        if path.is_file():
+            print(f"  {path.relative_to(build_dir)}")
 
 if __name__ == '__main__':
     copy_static_files() 
