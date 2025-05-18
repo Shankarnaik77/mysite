@@ -24,7 +24,7 @@ def copy_static_files():
 
     # Replace Django static tags with relative paths
     content = content.replace("{% load static %}", "")
-    content = content.replace("{% static 'mysite/", "./static/")
+    content = content.replace("{% static 'mysite/", "/mysite/static/")
     content = content.replace("' %}", "")
     content = content.replace("{% csrf_token %}", "")
 
