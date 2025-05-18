@@ -27,10 +27,16 @@ def get_index():
     return [{}]
 
 urlpatterns = [
-    # Use distill_path instead of path for pages you want to generate statically
+    # Add both with and without trailing slash to avoid 301 redirects
     distill_path('',
         TemplateView.as_view(template_name='mysite/index.html'),
         name='home',
+        distill_func=get_index,
+        distill_file='index.html'
+    ),
+    distill_path('/',
+        TemplateView.as_view(template_name='mysite/index.html'),
+        name='home_slash',
         distill_func=get_index,
         distill_file='index.html'
     ),

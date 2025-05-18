@@ -126,7 +126,18 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Enable WhiteNoise compression and caching
+# Django Distill settings
+DISTILL_DIR = os.path.join(BASE_DIR, 'build')
+
+# URL Settings
+APPEND_SLASH = False  # Don't redirect to add trailing slashes
+FORCE_SCRIPT_NAME = None
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Whitenoise settings
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
@@ -142,10 +153,3 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-
-# Django Distill settings
-DISTILL_DIR = os.path.join(BASE_DIR, 'build')
-
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -7,6 +7,7 @@ from django.conf import settings
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+os.environ.setdefault('DJANGO_SETTINGS_SKIP_LOCAL', 'True')  # Skip local settings
 django.setup()
 
 def copy_static_files():
@@ -31,7 +32,18 @@ def copy_static_files():
 
     # Then generate static site with django-distill
     print("Generating static site with django-distill...")
-    call_command('distill-local', '--force', output_dir=str(build_dir))
+    call_command('distill-local', '--force', '--exclude-staticfiles', output_dir=str(build_dir))
+
+    # Copy static files to build directory
+    print("Copying static files to build directory...")
+    static_build_dir = build_dir / 'static'
+    if not static_build_dir.exists():
+        static_build_dir.mkdir(parents=True)
+    for item in temp_static_dir.iterdir():
+        if item.is_dir():
+            shutil.copytree(item, static_build_dir / item.name, dirs_exist_ok=True)
+        else:
+            shutil.copy2(item, static_build_dir)
 
     # Clean up temp directory
     shutil.rmtree(temp_static_dir)
