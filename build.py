@@ -1,5 +1,6 @@
 import os
 import shutil
+import re
 from pathlib import Path
 import django
 from django.core.management import call_command
@@ -13,6 +14,18 @@ os.environ.setdefault('DJANGO_SETTINGS_SKIP_LOCAL', 'True')
 os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 django.setup()
 
+def fix_static_paths(content, static_url):
+    """Fix static file paths in the generated HTML."""
+    # Replace Django's static paths with the correct GitHub Pages paths
+    content = content.replace(
+        f'href="{static_url}'.encode(),
+        b'href="'
+    ).replace(
+        f'src="{static_url}'.encode(),
+        b'src="'
+    )
+    return content
+
 def generate_static_site(build_dir):
     """Generate static HTML files manually."""
     client = Client()
@@ -21,6 +34,7 @@ def generate_static_site(build_dir):
     print("Debug: Starting static site generation")
     print(f"Debug: ALLOWED_HOSTS = {settings.ALLOWED_HOSTS}")
     print(f"Debug: DEBUG = {settings.DEBUG}")
+    print(f"Debug: STATIC_URL = {settings.STATIC_URL}")
     
     # Ensure we have the right settings for static generation
     settings.ALLOWED_HOSTS = ['*']  # Allow any host during generation
@@ -38,8 +52,9 @@ def generate_static_site(build_dir):
             print(f"Debug: Response status code: {response.status_code}")
             
             if response.status_code == 200:
+                content = fix_static_paths(response.content, settings.STATIC_URL)
                 index_path = build_dir / 'index.html'
-                index_path.write_bytes(response.content)
+                index_path.write_bytes(content)
                 print(f"Generated {index_path}")
                 return
             
