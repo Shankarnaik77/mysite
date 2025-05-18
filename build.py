@@ -1,37 +1,46 @@
 import os
 import shutil
 from pathlib import Path
+import django
+from django.core.management import call_command
+from django.conf import settings
+
+# Set up Django environment
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+django.setup()
 
 def copy_static_files():
-    # Create build directory
-    build_dir = Path('build')
+    script_dir = Path(__file__).parent.absolute()
+    build_dir = script_dir / 'build'
+    temp_static_dir = script_dir / 'temp_static'
+    
+    # Clean build directory if it exists
     if build_dir.exists():
         shutil.rmtree(build_dir)
     build_dir.mkdir()
 
-    # Copy index.html to root
-    shutil.copy2('mysite/templates/mysite/index.html', build_dir / 'index.html')
+    # Clean temp static directory if it exists
+    if temp_static_dir.exists():
+        shutil.rmtree(temp_static_dir)
+    temp_static_dir.mkdir()
 
-    # Copy static files
-    static_src = Path('mysite/static/mysite')
-    static_dest = build_dir
-    shutil.copytree(static_src, static_dest / 'static')
+    # First, collect static files to a temporary directory
+    print("Collecting static files...")
+    settings.STATIC_ROOT = str(temp_static_dir)
+    call_command('collectstatic', '--noinput', '--clear')
 
-    # Update paths in index.html to use relative paths
-    index_path = build_dir / 'index.html'
-    with open(index_path, 'r', encoding='utf-8') as file:
-        content = file.read()
+    # Then generate static site with django-distill
+    print("Generating static site with django-distill...")
+    call_command('distill-local', '--force', output_dir=str(build_dir))
 
-    # Replace Django static tags with relative paths
-    content = content.replace("{% load static %}", "")
-    content = content.replace("{% static 'mysite/", "/mysite/static/")
-    content = content.replace("' %}", "")
-    content = content.replace("{% csrf_token %}", "")
-
-    with open(index_path, 'w', encoding='utf-8') as file:
-        file.write(content)
-
+    # Clean up temp directory
+    shutil.rmtree(temp_static_dir)
+    
     print("Build completed successfully!")
+    print(f"Build directory: {build_dir}")
+    print("Contents of build directory:")
+    for path in build_dir.rglob('*'):
+        print(f"  {path.relative_to(build_dir)}")
 
 if __name__ == '__main__':
     copy_static_files() 

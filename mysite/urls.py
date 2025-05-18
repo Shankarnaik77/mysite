@@ -17,9 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import TemplateView
+from django_distill import distill_path
+
+def get_index():
+    # This function only returns once as there is only one index page
+    return [{}]
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    # Use distill_path instead of path for pages you want to generate statically
+    distill_path('',
+        TemplateView.as_view(template_name='mysite/index.html'),
+        name='home',
+        distill_func=get_index,
+        distill_file='index.html'
+    ),
     path("myapp/", include("myapp.urls")),
     path("admin/", admin.site.urls),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
