@@ -17,14 +17,17 @@ def generate_static_site(build_dir):
     """Generate static HTML files manually."""
     client = Client()
     
-    # Get the homepage
-    response = client.get('/')
-    if response.status_code == 200:
-        index_path = build_dir / 'index.html'
-        index_path.write_bytes(response.content)
-        print(f"Generated {index_path}")
-    else:
-        raise Exception(f"Failed to generate index.html: {response.status_code}")
+    # Try both with and without trailing slash
+    for url in ['/', '']:
+        response = client.get(url)
+        if response.status_code == 200:
+            index_path = build_dir / 'index.html'
+            index_path.write_bytes(response.content)
+            print(f"Generated {index_path}")
+            return
+    
+    # If we get here, both attempts failed
+    raise Exception(f"Failed to generate index.html: Last status code was {response.status_code}")
 
 def copy_static_files():
     build_dir = Path(settings.BUILD_DIR)

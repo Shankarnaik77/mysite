@@ -113,7 +113,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'  # Removed leading slash to match GitHub Pages URL structure
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'mysite/static'),
 ]
@@ -123,7 +123,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 BUILD_DIR = os.path.join(BASE_DIR, 'build')
 
 # URL Settings
-APPEND_SLASH = False
+APPEND_SLASH = True  # Changed to handle trailing slashes consistently
 PREPEND_WWW = False
 
 # Media files

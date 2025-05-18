@@ -21,9 +21,14 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 urlpatterns = [
+    # Handle both slashed and unslashed URLs for the home page
     path('',
         TemplateView.as_view(template_name='mysite/index.html'),
         name='home'
+    ),
+    path('/',
+        TemplateView.as_view(template_name='mysite/index.html'),
+        name='home_slashed'
     ),
 ]
 
