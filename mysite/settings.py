@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_distill',
     'mysite',
-    'whitenoise.runserver_nostatic',  # Add this for development static files
 ]
 
 MIDDLEWARE = [
@@ -121,8 +119,8 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Django Distill settings
-DISTILL_DIR = os.path.join(BASE_DIR, 'build')
+# Build directory for static site
+BUILD_DIR = os.path.join(BASE_DIR, 'build')
 
 # URL Settings
 APPEND_SLASH = False

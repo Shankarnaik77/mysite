@@ -27,9 +27,8 @@ def generate_static_site(build_dir):
         raise Exception(f"Failed to generate index.html: {response.status_code}")
 
 def copy_static_files():
-    script_dir = Path(__file__).parent.absolute()
-    build_dir = script_dir / 'build'
-    temp_static_dir = script_dir / 'temp_static'
+    build_dir = Path(settings.BUILD_DIR)
+    temp_static_dir = Path(settings.BASE_DIR) / 'temp_static'
     
     # Clean directories
     for dir_path in [build_dir, temp_static_dir]:
