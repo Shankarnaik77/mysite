@@ -13,6 +13,33 @@ A modern, responsive travel website template perfect for showcasing destinations
 - Beautiful animations and transitions
 - Optimized for performance
 
+## Development
+
+This is a Django-based static site that gets deployed to GitHub Pages.
+
+### Local Development
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install django pillow whitenoise
+   ```
+3. Run the development server:
+   ```bash
+   python manage.py runserver
+   ```
+
+### Deployment
+
+The site is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+The deployment process:
+
+1. Builds the static site using Django
+2. Collects all static files
+3. Deploys to GitHub Pages using GitHub Actions
+
+Visit the live site at: https://shankarnaik77.github.io/mysite/
+
 ## Getting Started
 
 1. Clone this repository or download the files
