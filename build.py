@@ -19,10 +19,10 @@ def fix_static_paths(content, static_url):
     # Replace Django's static paths with the correct GitHub Pages paths
     content = content.replace(
         f'href="{static_url}'.encode(),
-        b'href="'
+        b'href="static/'
     ).replace(
         f'src="{static_url}'.encode(),
-        b'src="'
+        b'src="static/'
     )
     return content
 
