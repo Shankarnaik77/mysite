@@ -26,6 +26,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install django pillow whitenoise
 
+      - name: Clean build directory
+        run: |
+          rm -rf build/
+          mkdir -p build/
+
       - name: Build static site
         env:
           DJANGO_SETTINGS_MODULE: mysite.settings
@@ -50,4 +55,5 @@ jobs:
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy to GitHub Pages' 
+          commit_message: 'Deploy to GitHub Pages'
+          cname: ${{ github.event.repository.name }}.github.io 
