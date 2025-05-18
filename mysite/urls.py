@@ -19,18 +19,11 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from django_distill import distill_path
-
-def get_index():
-    return [{}]
 
 urlpatterns = [
-    distill_path('',
+    path('',
         TemplateView.as_view(template_name='mysite/index.html'),
-        name='home',
-        distill_func=get_index,
-        distill_file='index.html',
-        permanent=False  # Prevent 301 redirects
+        name='home'
     ),
 ]
 

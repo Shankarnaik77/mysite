@@ -4,12 +4,27 @@ from pathlib import Path
 import django
 from django.core.management import call_command
 from django.conf import settings
+from django.test import Client
+from django.urls import reverse
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 os.environ.setdefault('DJANGO_SETTINGS_SKIP_LOCAL', 'True')
 os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 django.setup()
+
+def generate_static_site(build_dir):
+    """Generate static HTML files manually."""
+    client = Client()
+    
+    # Get the homepage
+    response = client.get('/')
+    if response.status_code == 200:
+        index_path = build_dir / 'index.html'
+        index_path.write_bytes(response.content)
+        print(f"Generated {index_path}")
+    else:
+        raise Exception(f"Failed to generate index.html: {response.status_code}")
 
 def copy_static_files():
     script_dir = Path(__file__).parent.absolute()
@@ -29,7 +44,7 @@ def copy_static_files():
 
     # Generate static site
     print("Generating static site...")
-    call_command('distill-local', '--force', '--exclude-staticfiles', output_dir=str(build_dir))
+    generate_static_site(build_dir)
 
     # Copy static files
     print("Copying static files...")
